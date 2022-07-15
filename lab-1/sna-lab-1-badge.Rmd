@@ -1,20 +1,26 @@
 ---
 title: 'Intro to SNA Badge'
 subtitle: "LASER Institute SNA Learning Lab 1"
-author: "Dr. Shaun Kellogg"
+author: "Kim Wright"
 date: "`r format(Sys.Date(),'%B %e, %Y')`"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library(readr)
+library(tidygraph)
+library(ggraph)
+library(dplyr)
+library(here)
 ```
 
 ![](img/SNA_Intro_HX.png){width="30%"}
 
 The final activity for each learning lab provides space to work with data and to reflect on how the concepts and techniques introduced in each lab might apply to your own research.
 
-To earn a badge for each lab, you are required to respond to a set of prompts for two parts: 
+To earn a badge for each lab, you are required to respond to a set of prompts for two parts:
 
 -   In Part I, you will reflect on your understanding of key concepts and begin to think about potential next steps for your own study.
 
@@ -26,54 +32,81 @@ Use the institutional library (e.g. [NCSU Library](https://www.lib.ncsu.edu/#art
 
 1.  Provide an APA citation for your selected study.
 
-    -   
+    -   Alonso-Yanez, G., Babb, P., Brown Barb, A., & Pratim, S. (2016). Exploring STEM professional learning: A social network analysis. *Proceedings of the 4 th International STEM 2016 in Education Conference*, Beijing Normal University, Beijing China.
 
 2.  Who are the network's actors and how are they represented visually?
 
-    -   
+    -   K-12 STEM teachers- their interactions with one another are represented with node diagrams 
 
 3.  What ties connect these actors and how are they represented visually?
 
-    -   
+    -   The connections or edges are conversations between teachers, with edge color denoting what the topic of their conversation was.
 
 4.  Why were these relations of interest to the researcher?
 
-    -   
+    -   The researchers wanted to see with whom teachers collaborated and what they talked about. As a teacher educator, I could see the utility of studying teachers' conversations in order to think about improvements to structuring professional learning situations.
 
 5.  Finally, what makes this collection of actors a social network?
 
-    -   
+    -   The teachers are all participants in a school network's professional learning community.
 
 Draft a research question for a population you may be interested in studying, or that would be of interest to educational researchers, and that would require the collection of relational data and answer the following questions:
 
 1.  What relational data would need to be collected?
 
-    -   
+    -   Interactions between students in  a middle school where 25% of students, mostly students of color, are bused in to a majority white school for purposes of integration.
 
 2.  For what reason would relational data need to be collected in order to address this question?
 
-    -   
+    -   My question is around the degree to which students from different groups are forming relationships with one another or whether students are self-segregating...so the building is integrated, but are the students really integrated?
 
 3.  Explain the analytical level at which these data would need to be collected and analyzed.
 
-    -   
+    -   Data would need to be collected at the student level.
 
 4.  How does this differ from the ways in which individual or group behavior is typically conceptualized and modeled in conventional educational research?
 
-    -   
+    -   I would say that individual or group behavior related to school climate is usually measured in terms of individual or overall/mean student perceptions of their interactions with other students or their perceptions of school climate. I think a social network analysis perspective could provide a visual representation of the actual interactions or relationships between students to either confirm the degree to which student perceptions of school climate via interactions match the reality of climate/interactions.
 
 ### Part II: Data Product
 
 Using one of the data sets provided in your data folder, **your goal for this lab is to create a polished sociogram that visually represents this network.** For example, you may be interested in examining how shared characteristics among school leaders might help explain tie formation, such as gender, level of trust in colleagues, or whether they work at the school or district level.
 
-**Alternatively, you may use your own data set to estimate models akin to those we estimated in the guided practice.** 
+**Alternatively, you may use your own data set to estimate models akin to those we estimated in the guided practice.**
 
 I highly recommend creating a new R script in your lab-1 folder to complete this task. When your code is ready to share, use the code chunk below to share the final code for your model and answer the questions that follow.
 
-```{r, my-data-product}
-# YOUR FINAL CODE HERE
+```{r my-data-product}
 
+teacher_nodes <- read_csv(here("lab-1","data", "dlt1-nodes.csv"))
+teacher_edges <- read_csv(here("lab-1","data", "dlt1-edges.csv"))
 
+teacher_network <- tbl_graph(edges = teacher_edges,
+                             nodes = teacher_nodes, 
+                             directed = TRUE)
+
+plot(teacher_network)
+
+autograph(teacher_network)
+
+autograph(teacher_network,
+          node_label = UID,
+          node_colour = role1)
+
+teacher_network %>%
+  activate(nodes) %>%
+  filter(grades == "middle") %>%
+ggraph(layout = "fr") + 
+  geom_edge_link(arrow = arrow(length = unit(1, 'mm')), 
+                 end_cap = circle(1, 'mm'),
+                 start_cap = circle(1, 'mm'),
+                 alpha = .1) +
+  geom_node_point(aes(size = local_size(),
+                      color = experience2)) +
+  geom_node_text(aes(label = UID),
+                 repel=TRUE) +
+  theme_graph()
+  
 ```
 
 ### Knit & Submit
