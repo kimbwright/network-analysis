@@ -8,15 +8,9 @@ library(dplyr)
 teacher_nodes <- read.csv("lab-1/data/dlt1-nodes.csv")
 teacher_edges <- read.csv("lab-1/data/dlt1-edges.csv")
 
-##teacher_edges_groupN <- filter(teacher_edges, Discussion.Category == "Group N")
-
-##teacher_nodes_middle
-
 teacher_network <- tbl_graph(edges = teacher_edges,
                              nodes = teacher_nodes, 
                              directed = TRUE)
-
-teacher_network
 
 plot(teacher_network)
 
@@ -25,9 +19,6 @@ autograph(teacher_network)
 autograph(teacher_network,
           node_label = UID,
           node_colour = role1)
-
-
-#filter(teacher_nodes, grades == "middle")
 
 teacher_network %>%
   activate(nodes) %>%
